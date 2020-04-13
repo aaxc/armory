@@ -1,7 +1,7 @@
 ## Title: Armory Export
 ## Author: |c8BC34AAaxc|r
-## Version: 1.2.2
-## APIVersion: 100029
+## Version: 1.3.0
+## APIVersion: 100030
 ## SavedVariables: ArmoryExport
 
 Armory.lua

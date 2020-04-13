@@ -2,8 +2,8 @@
 
 Armory = {
     name = "Armory",
-    version = "1.2.2",
-    variableVersion = 10,
+    version = "1.3.0",
+    variableVersion = 11,
     author = "@Aaxc",
     account = GetDisplayName(),
     character = GetUnitName("player"),
@@ -90,6 +90,9 @@ function Export:Init()
             -- Get achievements from sub category
             achievementCount = subCategories[k][2]
             achievements = {}
+            achievementCriteria = {}
+            achievementsRewards = {}
+            relatedAchievements = {}
             for j = 0, achievementCount do
                 -- achievement Id
                 achievementId = GetAchievementId(i, k, j)
@@ -98,6 +101,80 @@ function Export:Init()
                 achievements[achievementId] = {
                     GetAchievementInfo(achievementId)
                 }
+
+                -- achievement criteria count
+                critCount = GetAchievementNumCriteria(achievementId)
+                if critCount > 0 then
+                    achievementCriteria[achievementId] = {}
+                    for k = 1, critCount do
+                        achievementCriteria[achievementId][k] = {
+                            GetAchievementCriterion(achievementId, k)
+                        }
+                    end
+                end
+
+                -- add achievement rewards
+                rewards = GetAchievementNumRewards(achievementId)
+                if rewards > 1 then -- I am assuming 1 rewards is always the points
+                    achievementsRewards[achievementId] = {}
+
+                    -- check collectible rewards
+                    r1 = {
+                        GetAchievementRewardCollectible(achievementId)
+                    }
+                    if r1[1] == true then
+                        achievementsRewards[achievementId]['collectible'] = {
+                            GetCollectibleInfo(r1[2])
+                        }
+                        achievementsRewards[achievementId]['collectible']['tid'] = r1[2]
+                    end
+
+                    -- check collectible rewards
+                    r2 = {
+                        GetAchievementRewardDye(achievementId)
+                    }
+                    if r2[1] == true then
+                        achievementsRewards[achievementId]['style'] = {
+                            GetCollectibleInfo(r2[2])
+                        }
+                        achievementsRewards[achievementId]['style']['tid'] = r2[2]
+                    end
+
+                    -- check collectible rewards
+                    r3 = {
+                        GetAchievementRewardItem(achievementId)
+                    }
+                    if r3[1] == true then
+                        achievementsRewards[achievementId]['item'] = {}
+                        achievementsRewards[achievementId]['item']['1'] = r3[2]
+                    end
+
+                    -- check collectible rewards
+                    r4 = {
+                        GetAchievementRewardTitle(achievementId)
+                    }
+                    if r4[1] == true then
+                        achievementsRewards[achievementId]['title'] = {}
+                        achievementsRewards[achievementId]['title']['1'] = r4[2]
+                    end
+                end
+
+                -- check if related achievements
+                firstInLine = GetFirstAchievementInLine(achievementId)
+                relatedAchievements[firstInLine] = {}
+                line = firstInLine
+                order = 0
+                while line > 0 do
+                    order = order + 1
+                    -- save as related achievement
+                    relatedAchievements[firstInLine][line] = {
+                        GetAchievementInfo(line)
+                    }
+                    relatedAchievements[firstInLine][line]['priority'] = order
+
+                    -- get next in line
+                    line = GetNextAchievementInLine(line)
+                end
             end
             for j = 0, achievementCount do
                 -- achievement Id
@@ -107,9 +184,86 @@ function Export:Init()
                 achievements[achievementId] = {
                     GetAchievementInfo(achievementId)
                 }
+
+                -- achievement criteria count
+                critCount = GetAchievementNumCriteria(achievementId)
+                if critCount > 0 then
+                    achievementCriteria[achievementId] = {}
+                    for k = 1, critCount do
+                        achievementCriteria[achievementId][k] = {
+                            GetAchievementCriterion(achievementId, k)
+                        }
+                    end
+                end
+
+                -- add achievement rewards
+                rewards = GetAchievementNumRewards(achievementId)
+                if rewards > 1 then -- I am assuming 1 rewards is always the points
+                    achievementsRewards[achievementId] = {}
+
+                    -- check collectible rewards
+                    r1 = {
+                        GetAchievementRewardCollectible(achievementId)
+                    }
+                    if r1[1] == true then
+                        achievementsRewards[achievementId]['collectible'] = {
+                            GetCollectibleInfo(r1[2])
+                        }
+                        achievementsRewards[achievementId]['collectible']['tid'] = r1[2]
+                    end
+
+                    -- check collectible rewards
+                    r2 = {
+                        GetAchievementRewardDye(achievementId)
+                    }
+                    if r2[1] == true then
+                        achievementsRewards[achievementId]['style'] = {
+                            GetCollectibleInfo(r2[2])
+                        }
+                        achievementsRewards[achievementId]['style']['tid'] = r2[2]
+                    end
+
+                    -- check collectible rewards
+                    r3 = {
+                        GetAchievementRewardItem(achievementId)
+                    }
+                    if r3[1] == true then
+                        achievementsRewards[achievementId]['item'] = {}
+                        achievementsRewards[achievementId]['item']['1'] = r3[2]
+                    end
+
+                    -- check collectible rewards
+                    r4 = {
+                        GetAchievementRewardTitle(achievementId)
+                    }
+                    if r4[1] == true then
+                        achievementsRewards[achievementId]['title'] = {}
+                        achievementsRewards[achievementId]['title']['1'] = r4[2]
+                    end
+                end
+
+                -- check if related achievements
+                firstInLine = GetFirstAchievementInLine(achievementId)
+                relatedAchievements[firstInLine] = {}
+                line = firstInLine
+                order = 0
+                while line > 0 do
+                    order = order + 1
+                    -- save as related achievement
+                    relatedAchievements[firstInLine][line] = {
+                        GetAchievementInfo(line)
+                    }
+                    relatedAchievements[firstInLine][line]['priority'] = order
+
+                    -- get next in line
+                    line = GetNextAchievementInLine(line)
+                end
             end
 
             subCategories[k].achievements = achievements
+            subCategories[k].achievementCriteria = achievementCriteria
+            subCategories[k].achievementsRewards = achievementsRewards
+            subCategories[k].relatedAchievements = relatedAchievements
         end
 
         categories[i].subCategories = subCategories
